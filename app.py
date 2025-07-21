@@ -5,6 +5,7 @@ import seaborn as sns
 import plotly.express as px
 
 st.set_page_config(layout="wide")
+
 @st.cache_data
 def load_data():
     return pd.read_csv("Transactions_data_complet.csv")
@@ -17,7 +18,8 @@ st.title("Dashboard Interactif - Analyse des Transactions")
 st.sidebar.header("Filtres")
 
 if 'TransactionStartTime' in df.columns:
-    df['TransactionStartTime'] = pd.to_datetime(df['TransactionStartTime'])
+    df['TransactionStartTime'] = pd.to_datetime(df['TransactionStartTime'], errors='coerce')  # Convertir et gérer les erreurs
+    df = df.dropna(subset=['TransactionStartTime'])  # Supprimer les lignes avec des valeurs manquantes
     date_min = df['TransactionStartTime'].min()
     date_max = df['TransactionStartTime'].max()
     date_range = st.sidebar.date_input("Filtrer par Date", [date_min, date_max])
