@@ -18,16 +18,25 @@ st.title("Dashboard Interactif - Analyse des Transactions")
 st.sidebar.header("Filtres")
 
 if 'TransactionStartTime' in df.columns:
-    df['TransactionStartTime'] = pd.to_datetime(df['TransactionStartTime'], errors='coerce')  # Convertir et gérer les erreurs
-    df = df.dropna(subset=['TransactionStartTime'])  # Supprimer les lignes avec des valeurs manquantes
+    # Convertir en datetime et gérer les erreurs
+    df['TransactionStartTime'] = pd.to_datetime(df['TransactionStartTime'], errors='coerce')
+    
+    # Supprimer les lignes avec des valeurs manquantes
+    df = df.dropna(subset=['TransactionStartTime'])
+    
+    # Vérifier les dates min et max
     date_min = df['TransactionStartTime'].min()
     date_max = df['TransactionStartTime'].max()
+    
+    # Sélection de la plage de dates
     date_range = st.sidebar.date_input("Filtrer par Date", [date_min, date_max])
 
     # Filtrage des données par date
     if len(date_range) == 2:
-        df = df[(df['TransactionStartTime'] >= pd.to_datetime(date_range[0])) &
-                 (df['TransactionStartTime'] <= pd.to_datetime(date_range[1]))]
+        date_start = pd.to_datetime(date_range[0])
+        date_end = pd.to_datetime(date_range[1])
+        
+        df = df[(df['TransactionStartTime'] >= date_start) & (df['TransactionStartTime'] <= date_end)]
 
 # Filtres catégoriels multiples
 colonnes_categorique = df.select_dtypes(include=['object', 'category']).columns.tolist()
